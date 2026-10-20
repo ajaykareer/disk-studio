@@ -19,9 +19,12 @@ try {
         }
     }
     $argumentText = '--smoke-test "' + $fixtureRoot + '" "' + $OutputDirectory + '"'
-    $process = Start-Process -FilePath $Executable -ArgumentList $argumentText -PassThru
+    $stderrFile = Join-Path $OutputDirectory 'ui-stderr.txt'
+    $process = Start-Process -FilePath $Executable -ArgumentList $argumentText -PassThru -RedirectStandardError $stderrFile
     if (-not $process.WaitForExit(90000)) { $process.Kill(); throw 'UI smoke test timed out.' }
     if ($process.ExitCode -ne 0) {
+        if (Test-Path $stderrFile) { Get-Content $stderrFile }
+        Get-WinEvent -FilterHashtable @{ LogName = 'Application'; StartTime = (Get-Date).AddMinutes(-3) } -ErrorAction SilentlyContinue | Where-Object { $_.ProviderName -in '.NET Runtime', 'Application Error' } | Select-Object -ExpandProperty Message
         $errorFile = Join-Path $OutputDirectory 'ui-error.txt'
         if (Test-Path $errorFile) { Get-Content $errorFile }
         throw "UI smoke test failed: $($process.ExitCode)"
