@@ -16,34 +16,8 @@ jobs:
   build:
     runs-on: windows-latest
     timeout-minutes: 20
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Materialize source bundle on initial setup
-        id: source
-        shell: pwsh
-        run: |
-          if (Test-Path source-bundle.json) {
-            if ('${{ github.event_name }}' -eq 'pull_request') { throw 'Source setup is only allowed on main.' }
-            $bundle = Get-Content source-bundle.json -Raw | ConvertFrom-Json -AsHashtable
-            $repoRoot = [IO.Path]::GetFullPath((Get-Location).Path) + [IO.Path]::DirectorySeparatorChar
-            foreach ($entry in $bundle.GetEnumerator()) {
-              $target = [IO.Path]::GetFullPath((Join-Path $repoRoot $entry.Key))
-              if (-not $target.StartsWith($repoRoot, [StringComparison]::OrdinalIgnoreCase)) { throw 'Invalid source path' }
-              New-Item -ItemType Directory -Force ([IO.Path]::GetDirectoryName($target)) | Out-Null
-              [IO.File]::WriteAllText($target, [string]$entry.Value, [Text.UTF8Encoding]::new($false))
-            }
-            Remove-Item source-bundle.json
-            git config user.name 'github-actions[bot]'
-            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git add --all
-            git commit -m 'Add Disk Studio source, tests, and documentation'
-            if ($LASTEXITCODE -ne 0) { throw 'Could not commit source' }
-            git push origin HEAD:main
-            if ($LASTEXITCODE -ne 0) { throw 'Could not publish source' }
-          }
-          "sha=$(git rev-parse HEAD)" | Add-Content $env:GITHUB_OUTPUT
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
