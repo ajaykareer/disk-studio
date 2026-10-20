@@ -1,0 +1,164 @@
+<Window x:Class="DiskStudio.MainWindow"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:local="clr-namespace:DiskStudio"
+ Title="Disk Studio — KAREER" Width="1220" Height="850" MinWidth="920" MinHeight="680"
+ WindowStartupLocation="CenterScreen" Background="{DynamicResource Bg}" Foreground="{DynamicResource Fg}"
+ FontFamily="Segoe UI" FontSize="13" Closing="Window_Closing">
+ <Window.Resources>
+  <Style TargetType="Button">
+   <Setter Property="Padding" Value="14,8"/><Setter Property="Margin" Value="0,0,8,0"/>
+   <Setter Property="Background" Value="{DynamicResource Surface2}"/><Setter Property="Foreground" Value="{DynamicResource Fg}"/>
+   <Setter Property="BorderBrush" Value="{DynamicResource Line}"/><Setter Property="BorderThickness" Value="1"/>
+   <Setter Property="Cursor" Value="Hand"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
+    <Border x:Name="B" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+      BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="7" Padding="{TemplateBinding Padding}">
+     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    </Border>
+    <ControlTemplate.Triggers>
+     <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="B" Property="BorderBrush" Value="{DynamicResource Accent}"/></Trigger>
+     <Trigger Property="IsEnabled" Value="False"><Setter TargetName="B" Property="Opacity" Value=".4"/></Trigger>
+    </ControlTemplate.Triggers>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
+  <Style TargetType="TextBox">
+   <Setter Property="Background" Value="{DynamicResource Surface2}"/><Setter Property="Foreground" Value="{DynamicResource Fg}"/>
+   <Setter Property="BorderBrush" Value="{DynamicResource Line}"/><Setter Property="Padding" Value="9,7"/>
+   <Setter Property="VerticalContentAlignment" Value="Center"/><Setter Property="CaretBrush" Value="{DynamicResource Fg}"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="TextBox">
+    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+     <Grid><ScrollViewer x:Name="PART_ContentHost"/>
+      <TextBlock x:Name="Hint" Text="{TemplateBinding Tag}" Foreground="{DynamicResource Muted}" IsHitTestVisible="False" Visibility="Collapsed" VerticalAlignment="Center"/>
+     </Grid>
+    </Border>
+    <ControlTemplate.Triggers><Trigger Property="Text" Value=""><Setter TargetName="Hint" Property="Visibility" Value="Visible"/></Trigger></ControlTemplate.Triggers>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
+  <Style TargetType="ComboBox"><Setter Property="Padding" Value="8,6"/><Setter Property="MinHeight" Value="34"/>
+   <Setter Property="Foreground" Value="#15212D"/><Setter Property="Background" Value="#F2F5F8"/></Style>
+  <Style TargetType="DataGridColumnHeader">
+   <Setter Property="Background" Value="{DynamicResource Surface2}"/><Setter Property="Foreground" Value="{DynamicResource Muted}"/>
+   <Setter Property="Padding" Value="12,10"/><Setter Property="BorderThickness" Value="0,0,0,1"/>
+   <Setter Property="BorderBrush" Value="{DynamicResource Line}"/><Setter Property="FontWeight" Value="SemiBold"/>
+  </Style>
+  <Style TargetType="DataGridCell">
+   <Setter Property="Padding" Value="12,8"/><Setter Property="BorderThickness" Value="0"/>
+   <Setter Property="Foreground" Value="{DynamicResource Fg}"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="DataGridCell">
+    <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}"><ContentPresenter VerticalAlignment="Center"/></Border>
+   </ControlTemplate></Setter.Value></Setter>
+   <Style.Triggers><Trigger Property="IsSelected" Value="True"><Setter Property="Background" Value="{DynamicResource Selection}"/></Trigger></Style.Triggers>
+  </Style>
+  <Style TargetType="DataGridRow">
+   <Setter Property="Background" Value="{DynamicResource Surface}"/>
+   <Style.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter Property="Background" Value="{DynamicResource Surface2}"/></Trigger></Style.Triggers>
+  </Style>
+ </Window.Resources>
+ <Grid Margin="24,18,24,14">
+  <Grid.RowDefinitions>
+   <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+   <RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/>
+  </Grid.RowDefinitions>
+  <Grid Margin="0,0,0,18">
+   <StackPanel Orientation="Horizontal">
+    <Border Background="{DynamicResource Accent}" CornerRadius="12" Width="43" Height="43" Margin="0,0,12,0">
+     <Grid><Ellipse Stroke="White" StrokeThickness="2" Margin="9"/><Ellipse Fill="White" Width="7" Height="7"/></Grid>
+    </Border>
+    <StackPanel><TextBlock Text="Disk Studio" FontSize="25" FontWeight="SemiBold"/>
+     <TextBlock Text="K A R E E R  /  Know your space." Foreground="{DynamicResource Muted}" FontSize="11"/></StackPanel>
+   </StackPanel>
+   <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" VerticalAlignment="Center">
+    <Button Content="Scan details" Click="Issues_Click"/><Button x:Name="ThemeButton" Content="Light theme" Click="Theme_Click"/>
+    <Button Content="About" Click="About_Click" Margin="0"/>
+   </StackPanel>
+  </Grid>
+  <Border Grid.Row="1" Background="{DynamicResource Surface}" BorderBrush="{DynamicResource Line}" BorderThickness="1" CornerRadius="10" Padding="14" Margin="0,0,0,14">
+   <Grid>
+    <Grid.ColumnDefinitions><ColumnDefinition Width="180"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="150"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+    <ComboBox x:Name="DrivePicker" SelectionChanged="Drive_Changed" Margin="0,0,10,0" ToolTip="Choose a drive" AutomationProperties.Name="Drive"/>
+    <TextBox x:Name="PathBox" Grid.Column="1" ToolTip="Drive or folder to scan" AutomationProperties.Name="Scan path"/>
+    <Button Grid.Column="2" Content="Browse…" Click="Browse_Click" Margin="8,0"/>
+    <ComboBox x:Name="SpeedPicker" Grid.Column="3" SelectedIndex="1" Margin="0,0,10,0" ToolTip="Eco: 1 worker. Balanced: 2. Fast: 4. More workers are not always faster on HDDs." AutomationProperties.Name="Scan mode">
+     <ComboBoxItem Content="Eco · 1 worker"/><ComboBoxItem Content="Balanced · 2"/><ComboBoxItem Content="Fast · 4"/>
+    </ComboBox>
+    <Button x:Name="ScanButton" Grid.Column="4" Content="Scan storage" Background="{DynamicResource Accent}" Foreground="White" Click="Scan_Click"/>
+    <Button x:Name="CancelButton" Grid.Column="5" Content="Cancel" Click="Cancel_Click" IsEnabled="False" Margin="0"/>
+   </Grid>
+  </Border>
+  <Grid Grid.Row="2" Margin="0,0,0,14">
+   <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition/><ColumnDefinition/></Grid.ColumnDefinitions>
+   <Border Background="{DynamicResource Surface}" CornerRadius="9" Padding="15,12" Margin="0,0,10,0">
+    <StackPanel><TextBlock Text="INDEXED FILE SIZE" Foreground="{DynamicResource Muted}" FontSize="10"/>
+     <TextBlock x:Name="SizeLabel" Text="—" FontSize="25" FontWeight="SemiBold"/>
+     <TextBlock Text="Logical size · not physical disk allocation" Foreground="{DynamicResource Muted}" FontSize="11"/></StackPanel>
+   </Border>
+   <Border Grid.Column="1" Background="{DynamicResource Surface}" CornerRadius="9" Padding="15,12" Margin="0,0,10,0">
+    <StackPanel><TextBlock Text="FILES DISCOVERED" Foreground="{DynamicResource Muted}" FontSize="10"/>
+     <TextBlock x:Name="FilesLabel" Text="—" FontSize="25" FontWeight="SemiBold"/>
+     <TextBlock x:Name="FoldersLabel" Text="Ready to index" Foreground="{DynamicResource Muted}" FontSize="11"/></StackPanel>
+   </Border>
+   <Border Grid.Column="2" Background="{DynamicResource Surface}" CornerRadius="9" Padding="15,12">
+    <StackPanel><TextBlock Text="DRIVE CAPACITY" Foreground="{DynamicResource Muted}" FontSize="10"/>
+     <TextBlock x:Name="FreeLabel" Text="—" FontSize="25" FontWeight="SemiBold"/>
+     <TextBlock x:Name="DriveLabel" Text="Select a local drive or folder" Foreground="{DynamicResource Muted}" FontSize="11"/></StackPanel>
+   </Border>
+  </Grid>
+  <Grid Grid.Row="3" Margin="0,0,0,10">
+   <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+   <DockPanel>
+    <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+     <Button Content="↑ Up" Click="Up_Click"/><Button Content="Root" Click="Root_Click"/>
+     <ComboBox x:Name="ViewPicker" Width="160" SelectedIndex="0" SelectionChanged="Filter_Changed">
+      <ComboBoxItem Content="Folder contents"/><ComboBoxItem Content="Largest files (all)"/>
+     </ComboBox>
+    </StackPanel>
+    <TextBlock x:Name="Breadcrumb" Text="Choose a drive or folder to begin" VerticalAlignment="Center" Margin="14,0,0,0" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource Muted}"/>
+   </DockPanel>
+   <Grid Grid.Row="1" Margin="0,10,0,0">
+    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="110"/><ColumnDefinition Width="130"/><ColumnDefinition Width="140"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+    <TextBox x:Name="SearchBox" Tag="Search names…" TextChanged="Search_Changed" ToolTip="Search names in the current view" AutomationProperties.Name="Search names"/>
+    <TextBox x:Name="ExtensionBox" Tag=".extension" Grid.Column="1" TextChanged="Search_Changed" Margin="8,0" ToolTip="Extension filter, e.g. .mp4" AutomationProperties.Name="File extension"/>
+    <ComboBox x:Name="MinimumPicker" Grid.Column="2" SelectedIndex="0" SelectionChanged="Filter_Changed" Margin="0,0,8,0" ToolTip="Minimum file or folder size">
+     <ComboBoxItem Content="Any size"/><ComboBoxItem Content="≥ 10 MiB"/><ComboBoxItem Content="≥ 100 MiB"/><ComboBoxItem Content="≥ 1 GiB"/>
+    </ComboBox>
+    <ComboBox x:Name="DatePicker" Grid.Column="3" SelectedIndex="0" SelectionChanged="Filter_Changed" Margin="0,0,8,0" ToolTip="Modified date filter">
+     <ComboBoxItem Content="Any date"/><ComboBoxItem Content="Last 7 days"/><ComboBoxItem Content="Last 30 days"/><ComboBoxItem Content="Last year"/>
+    </ComboBox>
+    <Button Grid.Column="4" Content="Export CSV" Click="Export_Click" Margin="0"/>
+   </Grid>
+  </Grid>
+  <Grid Grid.Row="4">
+   <Grid.RowDefinitions><RowDefinition Height="3*" MinHeight="110"/><RowDefinition Height="9"/><RowDefinition Height="2*" MinHeight="95"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+   <DataGrid x:Name="FilesGrid" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
+     SelectionMode="Single" HeadersVisibility="Column" GridLinesVisibility="None" RowHeight="37"
+     BorderBrush="{DynamicResource Line}" BorderThickness="1" Background="{DynamicResource Surface}"
+     EnableRowVirtualization="True" EnableColumnVirtualization="True" VirtualizingPanel.VirtualizationMode="Recycling"
+     ScrollViewer.CanContentScroll="True" MouseDoubleClick="Grid_DoubleClick" SelectionChanged="Grid_SelectionChanged"
+     AutomationProperties.Name="Storage results">
+    <DataGrid.Columns>
+     <DataGridTextColumn Header="Name · double-click a folder to explore" Binding="{Binding Name}" Width="*"/>
+     <DataGridTextColumn Header="Type" Binding="{Binding Kind}" Width="160"/>
+     <DataGridTextColumn Header="Size" Binding="{Binding SizeText}" SortMemberPath="Bytes" Width="120"/>
+     <DataGridTextColumn Header="Modified" Binding="{Binding ModifiedText}" SortMemberPath="ModifiedUtc" Width="150"/>
+    </DataGrid.Columns>
+   </DataGrid>
+   <GridSplitter Grid.Row="1" Height="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Background="{DynamicResource Line}" ResizeDirection="Rows"/>
+   <Border Grid.Row="2" Background="{DynamicResource Surface}" CornerRadius="8" ClipToBounds="True" Padding="6">
+    <local:TreemapControl x:Name="StorageMap" AutomationProperties.Name="Storage treemap"/>
+   </Border>
+   <DockPanel Grid.Row="3" Margin="0,9,0,0">
+    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+     <Button x:Name="OpenButton" Content="Open location" Click="Open_Click" IsEnabled="False"/>
+     <Button x:Name="CopyButton" Content="Copy path" Click="Copy_Click" IsEnabled="False"/>
+     <Button x:Name="RecycleButton" Content="Recycle file…" Click="Recycle_Click" IsEnabled="False" Margin="0"/>
+    </StackPanel>
+    <TextBlock x:Name="ViewSummary" Text="Your files stay on this computer." VerticalAlignment="Center" Foreground="{DynamicResource Muted}" TextWrapping="Wrap" Margin="0,0,10,0"/>
+   </DockPanel>
+  </Grid>
+  <StackPanel Grid.Row="5" Margin="0,12,0,0">
+   <ProgressBar x:Name="ScanProgressBar" Height="3" IsIndeterminate="False" Foreground="{DynamicResource Accent}" Background="{DynamicResource Line}"/>
+   <TextBlock x:Name="StatusLabel" Text="Ready · Scan reads metadata only. No files are uploaded." Foreground="{DynamicResource Muted}" Margin="0,7,0,0" TextWrapping="Wrap"/>
+  </StackPanel>
+ </Grid>
+</Window>
