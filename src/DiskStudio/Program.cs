@@ -24,6 +24,8 @@ public static class Program
                 e.Handled = true;
             }
         };
+        try
+        {
         var window = new MainWindow();
         if (smoke)
             window.Loaded += async (_, _) =>
@@ -37,5 +39,17 @@ public static class Program
                 }
             };
         return app.Run(window);
+        }
+        catch (Exception ex)
+        {
+            if (smoke)
+            {
+                Directory.CreateDirectory(args[2]);
+                File.WriteAllText(Path.Combine(args[2], "ui-error.txt"), ex.ToString());
+            }
+            else
+                MessageBox.Show(ex.ToString(), "Disk Studio could not start", MessageBoxButton.OK, MessageBoxImage.Error);
+            return 2;
+        }
     }
 }
