@@ -37,7 +37,8 @@ public partial class MainWindow : Window
         StorageMap.NodeSelected += node => { FilesGrid.SelectedItem = node; FilesGrid.ScrollIntoView(node); };
         StorageMap.NodeOpened += async node => { if (node.IsDirectory && !node.IsLink) { current = node; ViewPicker.SelectedIndex = 0; await RefreshViewAsync(); } };
         ready = true;
-        LoadDrives();
+        // Start asynchronous selection handlers only after the dispatcher is running.
+        Loaded += (_, _) => { if (DrivePicker.ItemsSource is null) LoadDrives(); };
     }
 
     private void ApplyTheme()
@@ -88,8 +89,12 @@ public partial class MainWindow : Window
             }
             catch { return ("Unavailable", "Capacity information could not be read"); }
         });
-        if (!IsLoaded && !ready) return;
-        FreeLabel.Text = info.Item1; DriveLabel.Text = info.Item2;
+        // Keep control access on the owning thread, including startup continuations.
+        await Dispatcher.InvokeAsync(() =>
+        {
+            if (!IsLoaded) return;
+            FreeLabel.Text = info.Item1; DriveLabel.Text = info.Item2;
+        });
     }
     private void Browse_Click(object sender, RoutedEventArgs e)
     {
